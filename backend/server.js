@@ -47,6 +47,10 @@ app.get("/", (req, res) => {
     res.send("MealMitra API running");
 });
 
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 app.use(notFound);
 app.use(errorHandler);
 
