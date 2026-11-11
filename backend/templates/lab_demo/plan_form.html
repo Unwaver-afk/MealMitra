@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Create Meal Plan — ModelForm Demonstration{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-title">
+            <h2>Add Meal Plan (Django ModelForm Demo)</h2>
+            <span class="badge badge-module">Module 4</span>
+        </div>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
+            Demonstrates server-side form generation, CSRF protection (<code>{% templatetag openblock %} csrf_token {% templatetag closeblock %}</code>), and backend validation using Django ModelForms.
+        </p>
+
+        {% if form.errors %}
+        <div style="background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; padding: 14px; border-radius: 8px; margin-bottom: 18px; font-size: 0.85rem;">
+            <strong>Please correct the errors below:</strong>
+            <ul style="margin-left: 20px; margin-top: 6px;">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Plan Title</label>
+                {{ form.title }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="{{ form.meal_type.id_for_label }}">Meal Type</label>
+                    {{ form.meal_type }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.duration.id_for_label }}">Duration</label>
+                    {{ form.duration }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.price.id_for_label }}">Price (₹ INR)</label>
+                {{ form.price }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.tags.id_for_label }}">Tags (Many-to-Many Relationship)</label>
+                {{ form.tags }}
+                <small style="color: #64748b; font-size: 0.75rem;">Hold Cmd (Mac) or Ctrl (Windows) to select multiple tags.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Save Plan via ModelForm</button>
+                <a href="{% url 'lab-demo-plans' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

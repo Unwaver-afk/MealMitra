@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MealMitra — Django Lab Demonstration{% endblock %}</title>
+    <!-- Static CSS demonstration (Module 3) -->
+    <link rel="stylesheet" href="{% static 'css/lab_demo.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation demonstrating reusable layout (Module 3) -->
+    <header class="lab-navbar">
+        <a href="{% url 'lab-demo-home' %}" class="lab-brand">
+            <span>🥗</span> MealMitra · Lab Demo
+        </a>
+        <ul class="lab-nav-links">
+            <li><a href="{% url 'lab-demo-home' %}">Overview</a></li>
+            <li><a href="{% url 'lab-demo-plans' %}">Plans (CRUD & DTL)</a></li>
+            <li><a href="{% url 'lab-demo-plan-create' %}">New Plan (ModelForm)</a></li>
+            <li><a href="{% url 'lab-demo-relationships' %}">ORM Relationships</a></li>
+            <li><a href="{% url 'lab-demo-search' %}">AJAX Search (Module 6)</a></li>
+            <li><a href="http://localhost:8000/admin/" target="_blank">Django Admin ↗</a></li>
+            <li><a href="http://localhost:5173" class="btn-react-return">← Back to React App</a></li>
+        </ul>
+    </header>
+
+    <main class="lab-container">
+        <!-- Content Block for Template Inheritance (Module 2 & 3) -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>MealMitra Full Stack Development Lab Demonstration Section</p>
+        <p>Demonstrating Python, Django MVT, DTL, Template Inheritance, ORM, ModelForms, and AJAX</p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

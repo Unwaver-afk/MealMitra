@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}MealMitra — Full Stack Lab Syllabus Demonstration{% endblock %}
+
+{% block content %}
+<section class="lab-hero">
+    <h1>Django Full Stack Lab Demonstration</h1>
+    <p>
+        This section demonstrates core Python and Django concepts required by the
+        <strong>Full Stack Development Lab</strong> syllabus while preserving the React 19 customer application.
+    </p>
+    <div class="syllabus-badges">
+        <span class="badge badge-module">Module 1: MVT Architecture</span>
+        <span class="badge badge-module">Module 2: Views & DTL</span>
+        <span class="badge badge-module">Module 3: Template Inheritance</span>
+        <span class="badge badge-module">Module 4: Django ORM & Forms</span>
+        <span class="badge badge-module">Module 5: Admin & Auth</span>
+        <span class="badge badge-module">Module 6: Reporting & AJAX</span>
+    </div>
+</section>
+
+<div class="grid-2">
+    <!-- Module 1 to 3 Card -->
+    <div class="card">
+        <div class="card-title">
+            <h3>MVT & Templates (Modules 1-3)</h3>
+            <span class="badge badge-info">DTL Active</span>
+        </div>
+        <p>Demonstrating Django's Model-View-Template architecture, URL routing, context passing, and template inheritance.</p>
+        <ul style="margin: 14px 0 20px 20px; font-size: 0.9rem; color: #475569;">
+            <li>Base template inheritance (<code>base.html</code>)</li>
+            <li>Static files routing with <code>{% templatetag openblock %} load static {% templatetag closeblock %}</code></li>
+            <li>DTL loop tags and context variables (<code>{% templatetag openvariable %} plans|length {% templatetag closevariable %}</code> = {{ total_plans }} plans)</li>
+        </ul>
+        <a href="{% url 'lab-demo-plans' %}" class="btn btn-primary">View Plans via DTL →</a>
+    </div>
+
+    <!-- Module 4 Card -->
+    <div class="card">
+        <div class="card-title">
+            <h3>Django ORM & ModelForms (Module 4)</h3>
+            <span class="badge badge-info">SQLite</span>
+        </div>
+        <p>Demonstrating Django ORM model relationships and server-side ModelForm validation.</p>
+        <ul style="margin: 14px 0 20px 20px; font-size: 0.9rem; color: #475569;">
+            <li><strong>1:1</strong> User ↔ UserProfile</li>
+            <li><strong>1:N</strong> User → Order, Order → Delivery</li>
+            <li><strong>N:M</strong> TiffinPlan ↔ Tag</li>
+            <li>ModelForm server-side validation</li>
+        </ul>
+        <div style="display:flex; gap: 10px;">
+            <a href="{% url 'lab-demo-relationships' %}" class="btn btn-secondary">Inspect Relationships</a>
+            <a href="{% url 'lab-demo-plan-create' %}" class="btn btn-primary">Try ModelForm</a>
+        </div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Module 5 Card -->
+    <div class="card">
+        <div class="card-title">
+            <h3>Administration & Auth (Module 5)</h3>
+            <span class="badge badge-info">Django Admin</span>
+        </div>
+        <p>Comprehensive Django Admin configuration with custom ModelAdmin displays, filters, search, and inlines.</p>
+        <ul style="margin: 14px 0 20px 20px; font-size: 0.9rem; color: #475569;">
+            <li>Configured UserAdmin with UserProfileInline</li>
+            <li>Tabular inline deliveries inside Orders</li>
+            <li>Many-to-Many horizontal tag filter on TiffinPlan</li>
+            <li>Default Superuser: <code>admin@mealmitra.com</code></li>
+        </ul>
+        <a href="http://localhost:8000/admin/" target="_blank" class="btn btn-primary">Launch Django Admin ↗</a>
+    </div>
+
+    <!-- Module 6 Card -->
+    <div class="card">
+        <div class="card-title">
+            <h3>Reporting & AJAX (Module 6)</h3>
+            <span class="badge badge-info">CSV · PDF · AJAX</span>
+        </div>
+        <p>Demonstrating dynamic file exports and asynchronous real-time searching.</p>
+        <ul style="margin: 14px 0 20px 20px; font-size: 0.9rem; color: #475569;">
+            <li>Python standard <code>csv</code> module streaming export</li>
+            <li>ReportLab dynamic PDF report generation with styled tables</li>
+            <li>Asynchronous AJAX search without page reload</li>
+        </ul>
+        <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{% url 'export-orders-csv' %}" class="btn btn-secondary">📥 Export CSV</a>
+            <a href="{% url 'export-orders-pdf' %}" class="btn btn-secondary">📄 Export PDF</a>
+            <a href="{% url 'lab-demo-search' %}" class="btn btn-primary">AJAX Search Demo</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

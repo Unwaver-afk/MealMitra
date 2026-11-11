@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Django ORM Relationships — Lab Demonstration{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+    <h2>Django ORM Database Relationships (Module 4)</h2>
+    <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px;">
+        Demonstrates One-to-One, One-to-Many, Many-to-One, and Many-to-Many relational architecture replacing MongoDB documents.
+    </p>
+
+    <div class="relationship-diagram">
+        <!-- 1:1 -->
+        <div class="rel-box">
+            <h4>1:1 One-to-One</h4>
+            <p style="font-size: 0.85rem; color: #1e293b;"><strong>User ↔ UserProfile</strong></p>
+            <p style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
+                Implemented using <code>models.OneToOneField(User)</code>. Stores personal preferences and contact details.
+            </p>
+            <div style="margin-top: 10px; font-size: 0.75rem; background: #fff; padding: 6px; border-radius: 4px;">
+                Total Profiles: <strong>{{ total_profiles }}</strong>
+            </div>
+        </div>
+
+        <!-- 1:N -->
+        <div class="rel-box">
+            <h4>1:N One-to-Many</h4>
+            <p style="font-size: 0.85rem; color: #1e293b;"><strong>Order → Deliveries</strong></p>
+            <p style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
+                Implemented using <code>models.ForeignKey(Order, related_name='deliveries')</code>. Generates 1, 7, or 30 delivery records.
+            </p>
+            <div style="margin-top: 10px; font-size: 0.75rem; background: #fff; padding: 6px; border-radius: 4px;">
+                Total Deliveries: <strong>{{ total_deliveries }}</strong>
+            </div>
+        </div>
+
+        <!-- N:1 -->
+        <div class="rel-box">
+            <h4>N:1 Many-to-One</h4>
+            <p style="font-size: 0.85rem; color: #1e293b;"><strong>Order → TiffinPlan / User</strong></p>
+            <p style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
+                Implemented using <code>models.ForeignKey</code> with cascading deletes. Each order connects to one user and one plan.
+            </p>
+            <div style="margin-top: 10px; font-size: 0.75rem; background: #fff; padding: 6px; border-radius: 4px;">
+                Total Orders: <strong>{{ total_orders }}</strong>
+            </div>
+        </div>
+
+        <!-- N:M -->
+        <div class="rel-box">
+            <h4>N:M Many-to-Many</h4>
+            <p style="font-size: 0.85rem; color: #1e293b;"><strong>TiffinPlan ↔ Tag</strong></p>
+            <p style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
+                Implemented using <code>models.ManyToManyField(Tag, related_name='plans')</code> with bridge table.
+            </p>
+            <div style="margin-top: 10px; font-size: 0.75rem; background: #fff; padding: 6px; border-radius: 4px;">
+                Total Tags: <strong>{{ total_tags }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">
+        <h3>Sample Live Orders with Relational Traversal</h3>
+        <span class="badge badge-info">select_related & prefetch_related</span>
+    </div>
+    <div class="table-responsive">
+        <table class="lab-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer (N:1)</th>
+                    <th>Plan (N:1)</th>
+                    <th>Deliveries Generated (1:N)</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in sample_orders %}
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.user.name }} ({{ order.user.email }})</td>
+                    <td>{{ order.plan.title }} ({{ order.plan.meal_type }} · {{ order.plan.duration }})</td>
+                    <td><span class="badge badge-module">{{ order.deliveries.count }} schedules</span></td>
+                    <td><span class="badge badge-info">{{ order.order_status }}</span></td>
+                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding: 20px;">No sample orders available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

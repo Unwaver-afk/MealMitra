@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Asynchronous AJAX Search — Module 6 Demonstration{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+        <h2>Asynchronous Real-Time AJAX Search (Module 6)</h2>
+        <span class="badge badge-module" id="search-results-count">{{ initial_count }} plans</span>
+    </div>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">
+        Type below to search meal plans asynchronously in real-time. Results are fetched via background AJAX calls to <code>/api/plans/search?q=...</code> and dynamically rendered into the DOM without refreshing the page.
+    </p>
+
+    <div class="form-group">
+        <input
+            type="search"
+            id="ajax-plan-search"
+            class="form-input"
+            placeholder="Type to search meal plans (e.g., 'breakfast', 'poha', 'lunch', 'paneer', 'dinner')..."
+            autocomplete="off"
+            style="font-size: 1.05rem; padding: 14px 18px;"
+        >
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="lab-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Meal Type</th>
+                    <th>Duration</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="ajax-search-results">
+                {% for plan in initial_plans %}
+                <tr>
+                    <td><strong>{{ plan.title }}</strong></td>
+                    <td><span class="badge badge-info">{{ plan.meal_type }}</span></td>
+                    <td>{{ plan.duration }}</td>
+                    <td><strong style="color: #059669;">₹{{ plan.price }}</strong></td>
+                    <td>{{ plan.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/lab_search.js' %}"></script>
+{% endblock %}

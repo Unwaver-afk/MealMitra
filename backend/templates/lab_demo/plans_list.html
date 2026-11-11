@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Plans — DTL Rendering Demonstration{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+    <div style="display:flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h2>Tiffin Plans Catalog (Django Template Language Demo)</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">
+                Rendered with server-side Django Templates, DTL tags (<code>{% templatetag openblock %} for {% templatetag closeblock %}</code>, <code>{% templatetag openblock %} if {% templatetag closeblock %}</code>), and ORM QuerySets.
+            </p>
+        </div>
+        <a href="{% url 'lab-demo-plan-create' %}" class="btn btn-primary">+ Add Plan via ModelForm</a>
+    </div>
+
+    <!-- Filter Bar demonstrating GET query filtering (Module 4) -->
+    <form method="GET" action="" style="display:flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+        <select name="meal_type" class="form-select" style="max-width: 180px;">
+            <option value="">All Meal Types</option>
+            <option value="Breakfast" {% if request.GET.meal_type == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+            <option value="Lunch" {% if request.GET.meal_type == 'Lunch' %}selected{% endif %}>Lunch</option>
+            <option value="Dinner" {% if request.GET.meal_type == 'Dinner' %}selected{% endif %}>Dinner</option>
+        </select>
+        <select name="duration" class="form-select" style="max-width: 180px;">
+            <option value="">All Durations</option>
+            <option value="Daily" {% if request.GET.duration == 'Daily' %}selected{% endif %}>Daily</option>
+            <option value="Weekly" {% if request.GET.duration == 'Weekly' %}selected{% endif %}>Weekly</option>
+            <option value="Monthly" {% if request.GET.duration == 'Monthly' %}selected{% endif %}>Monthly</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{% url 'lab-demo-plans' %}" class="btn btn-secondary">Reset</a>
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="lab-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Plan Title</th>
+                    <th>Meal Type</th>
+                    <th>Duration</th>
+                    <th>Price</th>
+                    <th>Associated Tags (N:M)</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                <tr>
+                    <td><strong>#{{ plan.id }}</strong></td>
+                    <td>{{ plan.title }}</td>
+                    <td><span class="badge badge-info">{{ plan.meal_type }}</span></td>
+                    <td>{{ plan.duration }}</td>
+                    <td><strong style="color: #059669;">₹{{ plan.price }}</strong></td>
+                    <td>
+                        {% for tag in plan.tags.all %}
+                            <span class="badge badge-module" style="font-size: 0.65rem;">{{ tag.name }}</span>
+                        {% empty %}
+                            <span style="color:#94a3b8; font-size:0.75rem;">None</span>
+                        {% endfor %}
+                    </td>
+                    <td style="color: #475569; font-size: 0.85rem;">{{ plan.description|truncatewords:12 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 24px; color: #64748b;">
+                        No plans found matching your filter criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
