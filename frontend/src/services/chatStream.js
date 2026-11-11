@@ -1,18 +1,10 @@
 const BASE_URL = import.meta.env?.VITE_API_URL || "/api";
 const CONNECT_TIMEOUT_MS = 15_000;
-const STREAM_IDLE_TIMEOUT_MS = 45_000;
-
-function readWithTimeout(reader, timeoutMs) {
-    let timeoutId;
-    return Promise.race([
-        reader.read(),
-        new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error("STREAM_TIMEOUT")), timeoutMs);
-        }),
-    ]).finally(() => clearTimeout(timeoutId));
-}
 
 /**
+ * Simulated streaming chat client for MealMitra.
+ * Connects to Django REST endpoint and renders a realistic smooth typing effect
+ * on the frontend without requiring backend SSE infrastructure or external AI APIs.
  *
  * @param {object} params
  * @param {string} params.message
@@ -35,10 +27,10 @@ export async function streamChat({ message, history, summary, userContext, signa
         controller.abort();
     }, CONNECT_TIMEOUT_MS);
 
-    let response;
+    let data;
     try {
         const token = localStorage.getItem("token");
-        response = await fetch(`${BASE_URL}/chatbot`, {
+        const response = await fetch(`${BASE_URL}/chatbot/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -47,6 +39,21 @@ export async function streamChat({ message, history, summary, userContext, signa
             body: JSON.stringify({ message, history, summary, userContext }),
             signal: controller.signal,
         });
+
+        if (!response.ok) {
+            let msg = "The assistant is unavailable right now.";
+            try {
+                const errData = await response.json();
+                if (errData?.message || errData?.error) msg = errData.message || errData.error;
+            } catch {
+                /* default */
+            }
+            onError(msg);
+            signal?.removeEventListener("abort", abortFromCaller);
+            return;
+        }
+
+        data = await response.json();
     } catch (err) {
         signal?.removeEventListener("abort", abortFromCaller);
         if (signal?.aborted) return;
@@ -61,82 +68,29 @@ export async function streamChat({ message, history, summary, userContext, signa
         clearTimeout(connectTimeout);
     }
 
-    if (!response.ok || !response.body) {
-        let msg = "The assistant is unavailable right now.";
-        try {
-            const data = await response.json();
-            if (data?.message) msg = data.message;
-        } catch {
-            /* Default body */
-        }
-        onError(msg);
-        signal?.removeEventListener("abort", abortFromCaller);
-        return;
-    }
+    const fullText = data.text || "";
+    const responseSummary = data.summary || "MealMitra assistant discussed available meal subscriptions.";
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let terminalEventReceived = false;
+    // Smooth frontend typing animation to simulate streaming effect
+    // Splits text into words or characters and emits them with human-like cadence
+    const words = fullText.split(/(\s+)/);
+    let index = 0;
 
-    const processEvent = (eventBlock) => {
-        const lines = eventBlock.split(/\r?\n/);
-        const eventType = lines.find((line) => line.startsWith("event:"))?.slice(6).trim();
-        const dataText = lines
-            .filter((line) => line.startsWith("data:"))
-            .map((line) => line.slice(5).trimStart())
-            .join("\n");
-        if (!eventType || !dataText) return;
-
-        let payload;
-        try {
-            payload = JSON.parse(dataText);
-        } catch {
+    const streamInterval = setInterval(() => {
+        if (signal?.aborted) {
+            clearInterval(streamInterval);
+            signal?.removeEventListener("abort", abortFromCaller);
             return;
         }
 
-        if (eventType === "chunk") onChunk(payload.text || "");
-        else if (eventType === "done") {
-            terminalEventReceived = true;
-            onDone(payload);
-        } else if (eventType === "error") {
-            terminalEventReceived = true;
-            onError(payload.message || "The assistant is unavailable right now.");
+        if (index < words.length) {
+            const chunk = words[index];
+            onChunk(chunk);
+            index++;
+        } else {
+            clearInterval(streamInterval);
+            signal?.removeEventListener("abort", abortFromCaller);
+            onDone({ text: fullText, summary: responseSummary });
         }
-    };
-
-    try {
-        while (true) {
-            const { done, value } = await readWithTimeout(reader, STREAM_IDLE_TIMEOUT_MS);
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const events = buffer.split(/\r?\n\r?\n/);
-            buffer = events.pop();
-
-            events.forEach(processEvent);
-            if (terminalEventReceived) {
-                await reader.cancel();
-                break;
-            }
-        }
-
-        buffer += decoder.decode();
-        if (buffer.trim()) processEvent(buffer);
-
-        if (!terminalEventReceived && !signal?.aborted) {
-            onError("The assistant connection closed before a response arrived. Please try again.");
-        }
-    } catch (err) {
-        if (signal?.aborted) return;
-        if (err.message === "STREAM_TIMEOUT") {
-            controller.abort();
-            onError("The assistant took too long to reply. Please try again.");
-        } else if (err.name !== "AbortError") {
-            onError("Connection interrupted. Please try again.");
-        }
-    } finally {
-        signal?.removeEventListener("abort", abortFromCaller);
-        reader.releaseLock();
-    }
+    }, 28);
 }

@@ -297,6 +297,32 @@ function AdminDashboard() {
     const [pageError, setPageError] = useState("");
     const [rowState, setRowState] = useState({});
 
+    const [exportingType, setExportingType] = useState("");
+
+    const downloadReport = async (type) => {
+        try {
+            setExportingType(type);
+            const response = await api.get(`/reports/orders/${type}/`, {
+                responseType: "blob",
+            });
+            const blob = new Blob([response.data], {
+                type: type === "csv" ? "text/csv" : "application/pdf",
+            });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `mealmitra_orders_report.${type}`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.success(`${type.toUpperCase()} report exported successfully!`);
+        } catch {
+            toast.error(`Failed to export ${type.toUpperCase()} report.`);
+        } finally {
+            setExportingType("");
+        }
+    };
+
     const loadOrders = async () => {
         const response = await api.get("/orders/all");
         setOrders(response.data);
@@ -497,14 +523,46 @@ function AdminDashboard() {
                         Administration
                     </p>
 
-                    <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#173f3b] dark:text-emerald-100 sm:text-4xl">
-                        Orders and meal plans
-                    </h1>
-
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        Manage the menu, review subscriptions and keep
-                        every customer order moving.
-                    </p>
+                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mt-4">
+                        <div>
+                            <h1 className="text-3xl font-semibold tracking-tight text-[#173f3b] dark:text-emerald-100 sm:text-4xl">
+                                Orders and meal plans
+                            </h1>
+                            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                                Manage the menu, review subscriptions and keep every customer order moving.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2.5">
+                            <button
+                                onClick={() => downloadReport("csv")}
+                                disabled={Boolean(exportingType)}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border border-emerald-900/15 text-[#173f3b] hover:bg-emerald-50 dark:bg-[#1a2e2b] dark:border-white/10 dark:text-emerald-200 dark:hover:bg-emerald-900/20 shadow-sm transition-colors cursor-pointer disabled:opacity-60"
+                            >
+                                <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                {exportingType === "csv" ? "Exporting CSV..." : "Export CSV (Module 6)"}
+                            </button>
+                            <button
+                                onClick={() => downloadReport("pdf")}
+                                disabled={Boolean(exportingType)}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#173f3b] text-white hover:bg-[#0f2e2b] dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-sm transition-colors cursor-pointer disabled:opacity-60"
+                            >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                {exportingType === "pdf" ? "Generating PDF..." : "Export PDF (Module 6)"}
+                            </button>
+                            <a
+                                href="http://localhost:8000/admin/"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-800/10 text-emerald-900 hover:bg-emerald-800/20 dark:bg-emerald-400/10 dark:text-emerald-300 dark:hover:bg-emerald-400/20 transition-colors"
+                            >
+                                Django Admin ↗
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </section>
 

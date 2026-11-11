@@ -37,7 +37,14 @@ function Signup() {
             await api.post("/auth/register", { name: name.trim(), email: email.trim().toLowerCase(), password });
             navigate("/login", { state: { registered: true } });
         } catch (error) {
-            setServerError(error.response?.data?.message || error.response?.data?.error || "Registration failed. Please try again.");
+            const errData = error.response?.data;
+            let msg = "Registration failed. Please try again.";
+            if (errData?.email) {
+                msg = Array.isArray(errData.email) ? errData.email.join(" ") : errData.email;
+            } else if (errData?.message || errData?.error) {
+                msg = errData.message || errData.error;
+            }
+            setServerError(msg);
         } finally {
             setIsSubmitting(false);
         }

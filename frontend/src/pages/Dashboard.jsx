@@ -4,7 +4,6 @@ import OrderTracker from "../components/OrderTracker";
 import { STATUS_STEPS } from "../constants/orderStatus";
 import api from "../services/api";
 import Spinner from "../components/Spinner";
-import { getSocket } from "../services/socket";
 import { useToast } from "../context/useToast";
 
 const statusLabel = (key) => STATUS_STEPS.find((s) => s.key === key)?.label || key;
@@ -93,39 +92,19 @@ function Dashboard() {
     const activeOrders  = orders.filter((o) => !["Delivered", "Cancelled"].includes(o.orderStatus));
     const orderHistory  = orders.filter((o) =>  ["Delivered", "Cancelled"].includes(o.orderStatus));
 
-    const activeOrderIds = activeOrders.map((o) => o._id).join(",");
+    // Periodic background refresh for live order tracking without Socket.IO
     useEffect(() => {
-        if (!activeOrderIds) return;
-        const socket = getSocket();
-
-        const joinRooms = () => {
-            activeOrderIds.split(",").forEach((id) => socket.emit("joinOrder", id));
-        };
-
-        const handleOrderUpdated = ({ orderId, status, updatedAt }) => {
-            setOrders((prev) => {
-                const target = prev.find((o) => o._id === orderId);
-                if (target && target.orderStatus !== status) {
-                    toast.success(`Your order is now ${statusLabel(status)}!`);
-                }
-                return prev.map((o) =>
-                    o._id === orderId ? { ...o, orderStatus: status, updatedAt } : o
-                );
-            });
-        };
-
-        
-        socket.on("connect", joinRooms);
-        socket.on("orderUpdated", handleOrderUpdated);
-        if (socket.connected) joinRooms();
-        else socket.connect();
-
-        return () => {
-            socket.off("connect", joinRooms);
-            socket.off("orderUpdated", handleOrderUpdated);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeOrderIds]);
+        if (activeOrders.length === 0) return;
+        const interval = setInterval(async () => {
+            try {
+                const response = await api.get("/orders/my");
+                setOrders(response.data);
+            } catch {
+                /* silent */
+            }
+        }, 12000);
+        return () => clearInterval(interval);
+    }, [activeOrders.length]);
 
     const filteredActiveOrders = useMemo(
         () => activeOrders.filter((order) => orderCardMatchesSearch(order, activeSearch)),

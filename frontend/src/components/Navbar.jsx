@@ -98,6 +98,14 @@ useEffect(() => {
             <Link to="/plans" onClick={() => setMenuOpen(false)} className={linkClass}>Plans</Link>
             <Link to="/about" onClick={() => setMenuOpen(false)} className={linkClass}>About</Link>
             <Link to="/contact" onClick={() => setMenuOpen(false)} className={linkClass}>Contact</Link>
+            <a
+                href="http://localhost:8000/lab-demo/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-emerald-800 dark:text-emerald-300 font-medium text-xs px-2.5 py-1 rounded-lg bg-emerald-100/60 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-200/60 transition"
+            >
+                Lab Demo ↗
+            </a>
         </>
     );
 

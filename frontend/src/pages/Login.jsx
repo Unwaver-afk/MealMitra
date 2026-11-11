@@ -30,7 +30,12 @@ function Login() {
                 navigate("/dashboard");
             }
         } catch (err) {
-            setError(err.response?.data?.message || "Login failed. Please try again.");
+            const errData = err.response?.data;
+            let msg = "Invalid email or password. Please try again.";
+            if (errData?.detail) msg = errData.detail;
+            else if (errData?.message) msg = errData.message;
+            else if (errData?.non_field_errors) msg = errData.non_field_errors.join(" ");
+            setError(msg);
         } finally {
             setLoading(false);
         }

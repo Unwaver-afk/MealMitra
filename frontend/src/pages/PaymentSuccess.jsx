@@ -10,7 +10,9 @@ export default function PaymentSuccess() {
         const fetchOrder = async () => {
             try {
                 const res = await api.get("/orders/my");
-                const found = res.data.find((o) => o._id === orderId);
+                const found = res.data.find(
+                    (o) => String(o._id) === String(orderId) || String(o.id) === String(orderId)
+                );
                 setOrder(found);
             } catch {
                 // fail silently

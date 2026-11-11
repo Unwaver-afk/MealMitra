@@ -39,8 +39,11 @@ function Plans() {
     const changeDuration = (next) => { setDuration(next); setSelectedPlans({}); setError(""); };
 
     const togglePlan = (plan) => {
+        const planKey = plan._id || plan.id;
         setSelectedPlans((cur) => {
-            if (cur[plan.mealType]?._id === plan._id) {
+            const currentPlan = cur[plan.mealType];
+            const currentKey = currentPlan ? (currentPlan._id || currentPlan.id) : null;
+            if (currentKey === planKey) {
                 const next = { ...cur }; delete next[plan.mealType]; return next;
             }
             return { ...cur, [plan.mealType]: plan };
@@ -52,7 +55,10 @@ function Plans() {
         if (!localStorage.getItem("token")) { navigate("/login", { state: { from: "/plans" } }); return; }
         try {
             setSubmitting(true); setError("");
-            for (const plan of selected) await api.post("/orders", { planId: plan._id });
+            for (const plan of selected) {
+                const planId = plan._id || plan.id;
+                await api.post("/orders", { planId });
+            }
             navigate("/dashboard", { state: { orderCreated: true, orderCount: selected.length } });
         } catch (requestError) {
             setError(requestError.response?.data?.message || "Your order could not be completed.");
