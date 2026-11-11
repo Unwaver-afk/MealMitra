@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
@@ -38,7 +40,7 @@ class User(AbstractUser):
     username = None  # Remove username field, use email instead
     email = models.EmailField('Email Address', unique=True, max_length=254)
     name = models.CharField('Full Name', max_length=80)
-    
+
     ROLE_CHOICES = (
         ('user', 'User'),
         ('admin', 'Admin'),
@@ -74,3 +76,35 @@ class User(AbstractUser):
     def increment_auth_version(self):
         self.auth_version += 1
         self.save(update_fields=['auth_version', 'updated_at'])
+
+
+class UserProfile(models.Model):
+    """
+    Demonstrates a One-to-One relationship with User.
+    Stores customer preferences, delivery address, and contact info.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=20, blank=True, default='')
+    address = models.CharField(max_length=255, blank=True, default='')
+    city = models.CharField(max_length=100, blank=True, default='')
+    pincode = models.CharField(max_length=10, blank=True, default='')
+    dietary_preference = models.CharField(
+        max_length=50,
+        choices=[('Vegetarian', 'Vegetarian'), ('Non-Vegetarian', 'Non-Vegetarian'), ('Vegan', 'Vegan'), ('All', 'All')],
+        default='Vegetarian'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.email}"
+
+
+@receiver(post_save, sender=User)
+def create_or_save_user_profile(sender, instance, created, **kwargs):
+    """Automatically create or update the profile when a user is saved."""
+    if created:
+        UserProfile.objects.create(user=instance)
+    else:
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
