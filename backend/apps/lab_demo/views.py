@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+
+def lab_demo_home(request):
+    return HttpResponse("MealMitra Django Lab Demo Section")

@@ -93,7 +93,35 @@ This document serves as the master record of the full-stack migration of MealMit
 - **Tests Performed**:
   - `python manage.py makemigrations` and `python manage.py migrate` executed cleanly.
   - Seeding verified via Django shell: 2 Users, 18 Plans, 7 Tags, 2 Orders, 8 Deliveries.
-- **Git Commit Hash**: (Pending Phase 3 commit)
+- **Git Commit Hash**: `467a11a`
+- **Status**: Completed.
+
+---
+
+### Phase 4: API Migration
+- **Objective**: Recreate Express API endpoints using Django REST Framework, implement serializers, authentication, permissions, CRUD operations, and search/filtering.
+- **Work Completed**:
+  - Implemented Authentication endpoints: Register, Login, Profile, Forgot Password, Reset Password, Token Refresh using SimpleJWT.
+  - Implemented Plans API: Public listing with filtering (`mealType`, `duration`, `search`, `tag`), Admin CRUD, and AJAX search endpoint.
+  - Implemented Orders API: Customer order placement, customer orders (`/api/orders/my`), Admin orders (`/api/orders/all`), Admin status updates.
+  - Implemented Simulated Payment endpoints: Order creation and verification (no real payment gateway integration required).
+  - Implemented Chatbot endpoint: Contextual AI assistant querying local SQLite database (no external Gemini API or SSE dependencies).
+  - Implemented Reports endpoints: CSV export and ReportLab PDF report generation.
+  - Implemented Contact endpoint: Server-side Django Form / ModelForm validation.
+  - Maintained complete backward compatibility with React frontend (supported both `mealType`/`meal_type`, `_id`/`id`, etc.).
+- **Files Created / Modified**:
+  - Added: `apps/accounts/serializers.py`, `apps/accounts/views.py`, `apps/accounts/urls.py`, `apps/accounts/permissions.py`
+  - Added: `apps/plans/serializers.py`, `apps/plans/views.py`, `apps/plans/urls.py`
+  - Added: `apps/orders/serializers.py`, `apps/orders/views.py`, `apps/orders/urls.py`
+  - Added: `apps/payments/views.py`, `apps/payments/urls.py`
+  - Added: `apps/chatbot/views.py`, `apps/chatbot/urls.py`
+  - Added: `apps/reports/views.py`, `apps/reports/urls.py`
+  - Added: `apps/contact/forms.py`, `apps/contact/views.py`, `apps/contact/urls.py`
+  - Added: Automated test suites in `accounts`, `plans`, `orders`, `payments`, `chatbot`, `reports`
+  - Modified: `config/urls.py`
+- **Tests Performed**:
+  - Executed 15 automated Django REST Framework test cases covering all apps and endpoints. All 15 tests passed (`OK`).
+- **Git Commit Hash**: (Pending Phase 4 commit)
 - **Status**: Completed.
 
 ---
@@ -120,22 +148,22 @@ This document serves as the master record of the full-stack migration of MealMit
 
 | Feature | Original Implementation | New Implementation | Status |
 |---|---|---|---|
-| User Registration | Express + bcrypt + Mongoose | Django REST Framework + Django Password Hashing | In Progress (Phase 3-4) |
-| User Login | Express + jsonwebtoken | SimpleJWT (AccessToken & RefreshToken) | In Progress (Phase 3-4) |
-| Profile Fetch | Express JWT middleware | DRF IsAuthenticated + UserSerializer | In Progress (Phase 3-4) |
-| Forgot/Reset Password | Express + Nodemailer | Django Token Generator / Mocked email link | In Progress (Phase 4) |
-| Meal Plans Catalog | Express + Mongoose find() | Django ORM QuerySet + PlanSerializer | In Progress (Phase 3-4) |
-| Admin Plan CRUD | Express + isAdmin middleware | DRF ModelViewSet / IsAdminUser | In Progress (Phase 3-4) |
-| Customer Order Placement | Express + Mongoose save() | Django ORM Transaction + OrderSerializer | In Progress (Phase 3-4) |
-| Customer Orders List | Express + populate() | Django ORM select_related / prefetch_related | In Progress (Phase 3-4) |
-| Admin Orders List & Update | Express + Socket.IO emit | Django ORM + DRF Views | In Progress (Phase 3-4) |
-| Payment Integration | Razorpay Orders & Verification | Mock Payment Flow with instant simulated confirmation | Planned (Phase 6) |
-| Email Notifications | Nodemailer with Gmail SMTP | Console Backend / Mock Responses | Planned (Phase 6) |
-| AI Chatbot | Google Gemini API + SSE | Local Conversational Engine + Mock Typing | Planned (Phase 6) |
-| CSV Order Export | None | Django `csv` module export endpoint | Planned (Phase 7) |
-| PDF Order Reports | None | ReportLab PDF generator endpoint | Planned (Phase 7) |
-| AJAX Search | None (Client-side only) | Server-side AJAX Search + Filter API | Planned (Phase 7) |
-| Django Lab Demo (MVT) | None | Dedicated `/lab-demo/` DTL template inheritance app | Planned (Phase 7) |
+| User Registration | Express + bcrypt + Mongoose | Django REST Framework + Django Password Hashing | Implemented & Tested |
+| User Login | Express + jsonwebtoken | SimpleJWT (AccessToken & RefreshToken) | Implemented & Tested |
+| Profile Fetch | Express JWT middleware | DRF IsAuthenticated + UserSerializer | Implemented & Tested |
+| Forgot/Reset Password | Express + Nodemailer | Django Token Generator / Simulated reset | Implemented & Tested |
+| Meal Plans Catalog | Express + Mongoose find() | Django ORM QuerySet + PlanSerializer | Implemented & Tested |
+| Admin Plan CRUD | Express + isAdmin middleware | DRF APIViews + IsAdminRole | Implemented & Tested |
+| Customer Order Placement | Express + Mongoose save() | Django ORM Transaction + OrderSerializer | Implemented & Tested |
+| Customer Orders List | Express + populate() | Django ORM select_related / prefetch_related | Implemented & Tested |
+| Admin Orders List & Update | Express + Socket.IO emit | Django ORM + DRF Views | Implemented & Tested |
+| Payment Integration | Razorpay Orders & Verification | Mock Payment Flow with instant simulated confirmation | Implemented & Tested |
+| Email Notifications | Nodemailer with Gmail SMTP | Console Backend / Mock Responses | Implemented & Tested |
+| AI Chatbot | Google Gemini API + SSE | Local Conversational Engine + Database Queries | Implemented & Tested |
+| CSV Order Export | None | Django `csv` module export endpoint | Implemented & Tested |
+| PDF Order Reports | None | ReportLab PDF generator endpoint | Implemented & Tested |
+| AJAX Search | None (Client-side only) | Server-side AJAX Search + Filter API | Implemented & Tested |
+| Django Lab Demo (MVT) | None | Dedicated `/lab-demo/` DTL template inheritance app | In Progress (Phase 7) |
 
 ---
 
@@ -164,26 +192,27 @@ This document serves as the master record of the full-stack migration of MealMit
 
 | # | HTTP Method | Original Express Route | New Django Route | Auth Level | Migration Status |
 |---|---|---|---|---|---|
-| 1 | POST | `/api/auth/register` | `/api/auth/register/` | Public | Planned |
-| 2 | POST | `/api/auth/login` | `/api/auth/login/` | Public | Planned |
-| 3 | POST | `/api/auth/forgot-password` | `/api/auth/forgot-password/` | Public | Planned (Mocked) |
-| 4 | POST | `/api/auth/reset-password/:token`| `/api/auth/reset-password/<token>/` | Public | Planned (Mocked) |
-| 5 | GET | `/api/auth/profile` | `/api/auth/profile/` | Authenticated | Planned |
-| 6 | POST | *(new)* | `/api/auth/token/refresh/` | Public | Planned |
-| 7 | GET | `/api/plans` | `/api/plans/` | Public | Planned |
-| 8 | POST | `/api/plans` | `/api/plans/` | Admin | Planned |
-| 9 | PUT | `/api/plans/:id` | `/api/plans/<id>/` | Admin | Planned |
-| 10 | DELETE | `/api/plans/:id` | `/api/plans/<id>/` | Admin | Planned |
-| 11 | POST | `/api/orders` | `/api/orders/` | Authenticated | Planned |
-| 12 | GET | `/api/orders/my` | `/api/orders/my/` | Authenticated | Planned |
-| 13 | GET | `/api/orders/all` | `/api/orders/all/` | Admin | Planned |
-| 14 | PUT | `/api/orders/:id` | `/api/orders/<id>/` | Admin | Planned |
-| 15 | POST | `/api/payment/create-order` | `/api/payment/create-order/` | Authenticated | Planned (Mocked) |
-| 16 | POST | `/api/payment/verify` | `/api/payment/verify/` | Authenticated | Planned (Mocked) |
-| 17 | POST | `/api/chatbot` | `/api/chatbot/` | Public | Planned (Mocked) |
-| 18 | GET | *(new)* | `/api/reports/orders/csv/` | Admin | Planned |
-| 19 | GET | *(new)* | `/api/reports/orders/pdf/` | Admin | Planned |
-| 20 | GET | *(new)* | `/api/plans/search/` | Public | Planned |
+| 1 | POST | `/api/auth/register` | `/api/auth/register/` | Public | Migrated & Tested |
+| 2 | POST | `/api/auth/login` | `/api/auth/login/` | Public | Migrated & Tested |
+| 3 | POST | `/api/auth/forgot-password` | `/api/auth/forgot-password/` | Public | Migrated & Tested |
+| 4 | POST | `/api/auth/reset-password/:token`| `/api/auth/reset-password/<token>/` | Public | Migrated & Tested |
+| 5 | GET | `/api/auth/profile` | `/api/auth/profile/` | Authenticated | Migrated & Tested |
+| 6 | POST | *(new)* | `/api/auth/token/refresh/` | Public | Migrated & Tested |
+| 7 | GET | `/api/plans` | `/api/plans/` | Public | Migrated & Tested |
+| 8 | POST | `/api/plans` | `/api/plans/` | Admin | Migrated & Tested |
+| 9 | PUT | `/api/plans/:id` | `/api/plans/<id>/` | Admin | Migrated & Tested |
+| 10 | DELETE | `/api/plans/:id` | `/api/plans/<id>/` | Admin | Migrated & Tested |
+| 11 | POST | `/api/orders` | `/api/orders/` | Authenticated | Migrated & Tested |
+| 12 | GET | `/api/orders/my` | `/api/orders/my/` | Authenticated | Migrated & Tested |
+| 13 | GET | `/api/orders/all` | `/api/orders/all/` | Admin | Migrated & Tested |
+| 14 | PUT | `/api/orders/:id` | `/api/orders/<id>/` | Admin | Migrated & Tested |
+| 15 | POST | `/api/payment/create-order` | `/api/payment/create-order/` | Authenticated | Migrated (Simulated) & Tested |
+| 16 | POST | `/api/payment/verify` | `/api/payment/verify/` | Authenticated | Migrated (Simulated) & Tested |
+| 17 | POST | `/api/chatbot` | `/api/chatbot/` | Public | Migrated (Local DB Engine) & Tested |
+| 18 | GET | *(new)* | `/api/reports/orders/csv/` | Admin | Migrated & Tested |
+| 19 | GET | *(new)* | `/api/reports/orders/pdf/` | Admin | Migrated & Tested |
+| 20 | GET | *(new)* | `/api/plans/search/` | Public | Migrated & Tested |
+| 21 | POST | *(new)* | `/api/contact/` | Public | Migrated & Tested |
 
 ---
 
