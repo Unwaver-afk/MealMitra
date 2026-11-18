@@ -21,3 +21,4 @@ urlpatterns = [
     path('reset-password/<str:token>/', ResetPasswordView.as_view(), name='auth-reset-password-slash'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]
+

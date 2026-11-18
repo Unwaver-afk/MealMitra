@@ -7,3 +7,4 @@ urlpatterns = [
     path('verify', VerifyPaymentView.as_view(), name='payment-verify'),
     path('verify/', VerifyPaymentView.as_view(), name='payment-verify-slash'),
 ]
+

@@ -11,3 +11,4 @@ class IsAdminRole(permissions.BasePermission):
             request.user.is_authenticated and
             (request.user.role == 'admin' or request.user.is_staff or request.user.is_superuser)
         )
+

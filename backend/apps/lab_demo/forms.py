@@ -30,3 +30,4 @@ class TiffinPlanModelForm(forms.ModelForm):
         if len(title) < 2:
             raise forms.ValidationError("Title must be at least 2 characters long.")
         return title
+

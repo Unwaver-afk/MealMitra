@@ -7,3 +7,4 @@ urlpatterns = [
     path('orders/pdf', ExportOrdersPDFView.as_view(), name='export-orders-pdf'),
     path('orders/pdf/', ExportOrdersPDFView.as_view(), name='export-orders-pdf-slash'),
 ]
+

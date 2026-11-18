@@ -277,3 +277,4 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'Created sample completed order #{order_completed.id}'))
 
         self.stdout.write(self.style.SUCCESS('MealMitra database seeding completed successfully!'))
+

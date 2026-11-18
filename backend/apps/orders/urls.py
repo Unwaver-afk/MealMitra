@@ -15,3 +15,4 @@ urlpatterns = [
     path('<int:pk>', OrderDetailUpdateView.as_view(), name='order-detail-update'),
     path('<int:pk>/', OrderDetailUpdateView.as_view(), name='order-detail-update-slash'),
 ]
+

@@ -73,3 +73,4 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 class ResetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, max_length=128)
+

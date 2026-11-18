@@ -17,3 +17,4 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Cleaned {deleted_count} orphaned orders."))
         else:
             self.stdout.write(self.style.SUCCESS(f"All {total_orders} orders are healthy with valid relationships."))
+

@@ -27,3 +27,4 @@ class ContactForm(forms.ModelForm):
         if len(message) < 5:
             raise forms.ValidationError("Message must be at least 5 characters long.")
         return message
+

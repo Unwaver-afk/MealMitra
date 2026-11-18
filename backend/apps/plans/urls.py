@@ -12,3 +12,4 @@ urlpatterns = [
     path('<int:pk>', PlanDetailUpdateDeleteView.as_view(), name='plan-detail-update-delete'),
     path('<int:pk>/', PlanDetailUpdateDeleteView.as_view(), name='plan-detail-update-delete-slash'),
 ]
+
