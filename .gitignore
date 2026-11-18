@@ -1,7 +1,7 @@
 # Node modules
 frontend/node_modules/
 backend/node_modules/
-backend_legacy/node_modules/
+legacy_archive/node_modules/
 
 # Python
 venv/
@@ -18,7 +18,7 @@ db.sqlite3-journal
 # Environment files
 frontend/.env
 backend/.env
-backend_legacy/.env
+legacy_archive/.env
 .env
 
 # Build folders

@@ -57,7 +57,8 @@ MealMitra/
 │   ├── public/                      # Static icons and meal images
 │   ├── package.json                 # Node dependencies
 │   └── vite.config.js               # Dev proxy configured to http://127.0.0.1:8000
-├── backend_legacy/                  # Original Node.js/Express backend (Preserved reference)
+├── legacy_archive/                  # Archived original Node.js/Express backend (Reference only)
+├── DIRECTORY_MAP.md                 # Instant feature-to-file code index
 ├── MIGRATION_LOG.md                 # Master historical record of the complete migration
 └── README.md
 ```
