@@ -1,0 +1,165 @@
+================================================================================
+                    MEALMITRA — PROJECT EXPLANATION & SUMMARY
+================================================================================
+
+1. WHAT IS MEALMITRA? (THE BIG PICTURE)
+--------------------------------------------------------------------------------
+MealMitra is a full-stack web application for a daily tiffin (meal) delivery 
+service. 
+
+Think of it like a subscription service for home-style meals:
+- Customers can browse healthy breakfast, lunch, and dinner plans.
+- Customers can filter by food type (vegetarian, non-vegetarian, dietary needs).
+- Customers can subscribe to meal plans, checkout, and track their daily deliveries.
+- Customers can chat with a built-in assistant to find meals matching their budget.
+- Admins can manage plans, monitor orders, update deliveries, and export reports.
+
+It is built using:
+- Frontend: React 19 (fast, interactive user interface in the browser)
+- Backend: Python 3.13 & Django 6.1 (secure server, business logic & database)
+- Database: SQLite with Django ORM (stores users, plans, and orders)
+
+
+================================================================================
+2. HOW THE PROJECT IS STRUCTURED
+================================================================================
+The project is divided cleanly into two main parts:
+
+  MealMitra/
+  ├── frontend/         --> Everything the user sees and clicks in the browser
+  │                         (React, Tailwind CSS, Vite)
+  │
+  ├── backend/          --> The engine behind the scenes that handles data
+  │                         (Python, Django REST Framework, SQLite)
+  │
+  └── legacy_archive/   --> Original Node.js/Express backend preserved for reference
+
+
+================================================================================
+3. BACKEND FUNCTIONALITIES (WHAT EACH PART DOES)
+================================================================================
+The Django backend is split into 8 small, focused applications ("apps"):
+
+1. accounts (User Management & Security)
+   - User Registration: Creates a new user with hashed passwords.
+   - User Login: Authenticates users and issues secure JWT tokens.
+   - User Profile: Stores phone number, delivery address, and food preferences.
+   - Permissions: Ensures customers only see their own data while admins can 
+     access administrative features.
+
+2. plans (Tiffin Meal Plans)
+   - View Plans: Returns the list of all available meal plans (price, calories, meals).
+   - Filter & Search: Allows searching plans by title, tags (veg/non-veg), or meal type.
+   - Plan Details: Shows full breakdown of dishes included in a plan.
+   - Admin CRUD: Allows admins to create, edit, or delete meal plans.
+
+3. orders (Subscriptions & Delivery Tracking)
+   - Place Order: Converts a selected meal plan into an active subscription.
+   - Delivery Schedule: Automatically schedules daily lunch/dinner deliveries.
+   - My Orders: Lets users check their past and active meal subscriptions.
+   - Delivery Updates: Admins can mark orders/deliveries as Preparing, Out for 
+     Delivery, or Delivered.
+
+4. payments (Simulated Checkout)
+   - Safe Demo Checkout: Simulates payment processing with instant success feedback.
+   - No Real Money Required: Updates orders to "Paid" in the database safely 
+     without requiring real bank or Razorpay credentials.
+
+5. chatbot (Meal Recommendation Assistant)
+   - Smart Meal Helper: Users can type questions like "show veg plans under 1000" 
+     or "what do you have for dinner?".
+   - Database Search: Queries real plans from the database and returns matching 
+     recommendations instantly.
+
+6. reports (Exporting Data)
+   - CSV Export: Downloads all orders into an Excel-friendly CSV spreadsheet.
+   - PDF Export: Generates and downloads a clean, printable PDF report of orders.
+
+7. contact (Customer Support)
+   - Contact Form: Collects user messages, inquiries, and feedback.
+   - Server-side Validation: Validates email, subject, and message before saving.
+
+8. lab_demo (College Syllabus Showcase)
+   - Multi-page Django Templates: Demonstrates classic Django MVT (Model-View-Template).
+   - Template Inheritance: Uses a shared base layout with navigation and footer.
+   - Django ModelForms: Demonstrates server-side HTML form handling and validation.
+   - ORM Inspector: Live visual page showing 1-to-1, 1-to-many, and many-to-many 
+     database relationships. Accessible at http://localhost:8000/lab-demo/.
+
+
+================================================================================
+4. FRONTEND FUNCTIONALITIES (WHAT USERS SEE & DO)
+================================================================================
+The React 19 frontend provides a clean, responsive user experience:
+
+- Home Page:
+  Welcomes visitors with banner highlights, popular tiffin plans, customer 
+  reviews, and key service features.
+
+- Explore Plans Page:
+  Displays cards for all meal plans with a live search bar and filter pills 
+  (All, Pure Veg, Non-Veg, High Protein). Updates without reloading the page.
+
+- Plan Details Page:
+  Shows dishes, weekly schedule, nutritional info, pricing, and a "Subscribe Now" 
+  button.
+
+- Checkout & Payment Modal:
+  Lets users enter delivery details and complete a simulated one-click checkout.
+
+- User Dashboard (My Orders):
+  Shows active subscriptions, subscription start/end dates, and daily delivery 
+  progress bars.
+
+- Admin Dashboard (/admin):
+  Special control panel for the manager to view all system orders, change 
+  delivery status, and download CSV/PDF reports with one click.
+
+- Floating AI Chatbot Widget:
+  A friendly chat icon on every page that opens a conversation window with 
+  typing animation to assist users in selecting the best meal plan.
+
+- Light / Dark Mode:
+  Users can switch between dark and light themes using the header toggle button.
+
+
+================================================================================
+5. SIMULATED (DEMO) FEATURES EXPLAINED
+================================================================================
+For college lab evaluation, project demos, and easy offline grading:
+- Payments: Simulated so anyone testing the project can checkout without credit cards.
+- Emails: Simulated so password resets and receipts don't require external SMTP.
+- AI Chat: Simulated using local database matching so it works without paid API keys.
+
+
+================================================================================
+6. COLLEGE SYLLABUS MAPPING (MODULES 1 TO 6)
+================================================================================
+This project satisfies all requirements of the Full Stack Development Lab:
+
+- Module 1 (Fundamentals): Clean Django modular app structure and settings.
+- Module 2 (Views & URLs): URL routing, function/class views, request-response cycle.
+- Module 3 (Templates): Base template inheritance, blocks, DTL (at /lab-demo/).
+- Module 4 (Database & ORM): SQLite with 1:1, 1:N, and N:M model relationships.
+- Module 5 (Auth & Admin): Django Admin portal (/admin/) and JWT authentication.
+- Module 6 (Reports & AJAX): CSV/PDF file downloads and real-time React search.
+
+
+================================================================================
+7. HOW TO RUN THE PROJECT (QUICK CHEAT-SHEET)
+================================================================================
+Backend:
+  cd backend
+  source venv/bin/activate
+  python manage.py runserver 8000
+
+Frontend:
+  cd frontend
+  npm run dev
+
+Key URLs:
+- React Website:          http://localhost:5173/
+- React Admin Dashboard:  http://localhost:5173/admin
+- Django Admin Portal:    http://localhost:8000/admin/
+- Django Lab Demo:        http://localhost:8000/lab-demo/
+================================================================================
