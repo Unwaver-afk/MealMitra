@@ -94,7 +94,7 @@ function Signup() {
 
                         <form onSubmit={handleSubmit} noValidate className="space-y-5">
                             {[
-                                { id: "name", label: "Full name", type: "text", placeholder: "Shaurya Gupta", value: name, setter: setName, autoComplete: "name" },
+                                { id: "name", label: "Full name", type: "text", placeholder: "Prakhar Agnihotri", value: name, setter: setName, autoComplete: "name" },
                                 { id: "email", label: "Email address", type: "email", placeholder: "Example_eva01@gmail.com", value: email, setter: setEmail, autoComplete: "email" },
                                 { id: "password", label: "Password", type: "password", placeholder: "Not less than 8 characters", value: password, setter: setPassword, autoComplete: "new-password" },
                             ].map(({ id, label, type, placeholder, value, setter, autoComplete }) => (

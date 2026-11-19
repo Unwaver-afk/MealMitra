@@ -3,7 +3,7 @@ import api from "../services/api";
 import { useToast } from "../context/useToast";
 
 const contactDetails = [
-    { label: "Contact person", value: "Shaurya Gupta",              detail: "Customer care coordinator" },
+    { label: "Contact person", value: "Prakhar Agnihotri",              detail: "Customer care coordinator" },
     { label: "Email",          value: "hello@mealmitra.example",     detail: "Replies within one business day", href: "mailto:hello@mealmitra.example" },
     { label: "Mobile",         value: "+91 90000 12345",             detail: "Monday to Saturday, 9 AM–7 PM",   href: "tel:+919000012345" },
     { label: "Address",        value: "Random Office, Noida , Uttar Pradesh , India", detail: "Noida ,UP ,201309" },
