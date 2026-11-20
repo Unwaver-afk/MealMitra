@@ -393,7 +393,7 @@ function AdminDashboard() {
         }));
 
         try {
-            await api.put(`/orders/${id}`, { orderStatus });
+            await api.put(`/orders/${id}/`, { orderStatus });
 
             setOrders((current) =>
                 current.map((order) =>
@@ -443,9 +443,9 @@ function AdminDashboard() {
             };
 
             if (editingId) {
-                await api.put(`/plans/${editingId}`, payload);
+                await api.put(`/plans/${editingId}/`, payload);
             } else {
-                await api.post("/plans", payload);
+                await api.post("/plans/", payload);
             }
 
             await loadPlans();
@@ -492,7 +492,7 @@ function AdminDashboard() {
 
         try {
             setPageError("");
-            await api.delete(`/plans/${plan._id}`);
+            await api.delete(`/plans/${plan._id}/`);
 
             setPlans((current) =>
                 current.filter((item) => item._id !== plan._id)

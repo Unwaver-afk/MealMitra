@@ -57,11 +57,17 @@ function Plans() {
             setSubmitting(true); setError("");
             for (const plan of selected) {
                 const planId = plan._id || plan.id;
-                await api.post("/orders", { planId });
+                await api.post("/orders/", { planId });
             }
             navigate("/dashboard", { state: { orderCreated: true, orderCount: selected.length } });
         } catch (requestError) {
-            setError(requestError.response?.data?.message || "Your order could not be completed.");
+            const data = requestError.response?.data;
+            let msg = data?.message || data?.detail;
+            if (!msg && data && typeof data === "object") {
+                const values = Object.values(data).flat();
+                if (values.length) msg = values.join(" ");
+            }
+            setError(msg || "Your order could not be completed.");
         } finally {
             setSubmitting(false);
         }

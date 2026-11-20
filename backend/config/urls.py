@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.conf.urls.static import static
+from orders.views import OrderCreateView
+from plans.views import PlanListCreateView
 
 
 def root_view(request):
@@ -22,9 +24,11 @@ urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),
 
-    # REST APIs for MealMitra
+    # REST APIs for MealMitra (supporting both with and without trailing slash)
     path('api/auth/', include('accounts.urls')),
+    path('api/plans', PlanListCreateView.as_view(), name='plan-list-noslash'),
     path('api/plans/', include('plans.urls')),
+    path('api/orders', OrderCreateView.as_view(), name='order-create-noslash'),
     path('api/orders/', include('orders.urls')),
     path('api/payment/', include('payments.urls')),
     path('api/chatbot/', include('chatbot.urls')),
